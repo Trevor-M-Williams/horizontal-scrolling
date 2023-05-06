@@ -14,6 +14,7 @@ function enableHorizontalScroll() {
   const items = Array.from(frame.children);
 
   handleCSS();
+
   const frameWidth = calculateFrameWidth();
   const trackWidth = frameWidth - window.innerWidth + window.innerHeight;
   track.style.height = `${trackWidth}px`;
