@@ -1,29 +1,43 @@
-enableHorizontalScrolling();
-window.onresize = enableHorizontalScrolling;
+handleScroll();
+window.onresize = handleScroll;
 
-function enableHorizontalScrolling() {
-  if (window.innerWidth < 991) {
-    disableHorizontalScrolling();
-    return;
-  }
+function handleScroll() {
+  if (window.innerWidth < 991) return;
+  if (window.orientation === undefined) enableHorizontalScroll();
+  else disableHorizontalScroll();
+}
+
+function enableHorizontalScroll() {
   const track = document.querySelector(".track");
+  const camera = document.querySelector(".camera");
   const frame = document.querySelector(".frame");
   const items = Array.from(frame.children);
-  let frameWidth = 0;
 
-  items.forEach((item) => {
-    const itemWidth = item.offsetWidth;
-    frameWidth += itemWidth;
-  });
-
+  handleCSS();
+  const frameWidth = calculateFrameWidth();
   const trackWidth = frameWidth - window.innerWidth + window.innerHeight;
-  track.style.height = trackWidth + "px";
-  const trackOffset = track.getBoundingClientRect().top + window.scrollY;
+  track.style.height = `${trackWidth}px`;
+  const trackOffset = track.offsetTop;
+  shiftFrame();
+  window.onscroll = shiftFrame;
 
-  handleScroll();
-  window.onscroll = handleScroll;
+  function calculateFrameWidth() {
+    let width = 0;
+    items.forEach((item) => {
+      const itemWidth = item.offsetWidth;
+      width += itemWidth;
+    });
+    return width;
+  }
 
-  function handleScroll() {
+  function handleCSS() {
+    camera.style.position = "sticky";
+    camera.style.top = "0";
+    camera.style.overflow = "hidden";
+    frame.style.flexDirection = "row";
+  }
+
+  function shiftFrame() {
     const scrollY = window.scrollY;
     const max = trackWidth - window.innerHeight;
     let shift = scrollY - trackOffset;
@@ -33,10 +47,13 @@ function enableHorizontalScrolling() {
   }
 }
 
-function disableHorizontalScrolling() {
+function disableHorizontalScroll() {
   const track = document.querySelector(".track");
+  const camera = document.querySelector(".camera");
   const frame = document.querySelector(".frame");
   track.style.height = "auto";
+  camera.style.height = "auto";
   frame.style.transform = "translateX(0)";
+  frame.style.flexDirection = "column";
   window.onscroll = null;
 }
